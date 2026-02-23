@@ -63,8 +63,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           content: String(m.content ?? ""),
         })),
       ],
-      // helps keep outputs short + consistent
-      temperature: 0.3,
     });
 
     const reply = completion.choices?.[0]?.message?.content ?? "";
