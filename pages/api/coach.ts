@@ -10,7 +10,7 @@ type IncomingMessage = {
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// NOTE: Replace these placeholders with your real system prompts (you already have them in your repo).
+// NOTE: Replace these placeholders with your real system prompts.
 const SYSTEM_PROMPTS: Record<CoachId, string> = {
   presence: "You are the Presence Coach. Follow the Presence protocol exactly.",
   pride: "You are the Pride Coach. Follow the Pride protocol exactly.",
@@ -40,19 +40,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const safeMessages = Array.isArray(messages) ? messages : [];
 
-    // Map messages into OpenAI Responses API input
-    const input = safeMessages.map((m) => ({
-      role: m.role === "assistant" ? "assistant" : "user",
-      content: String(m.content ?? ""),
-    }));
-
-    const response = await client.responses.create({
+    const completion = await client.chat.completions.create({
       model: "gpt-5",
-      instructions: SYSTEM_PROMPTS[coach],
-      input,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPTS[coach] },
+        ...safeMessages.map((m) => ({
+          role: m.role,
+          content: String(m.content ?? ""),
+        })),
+      ],
     });
 
-    return res.status(200).json({ reply: response.output_text ?? "" });
+    const reply = completion.choices?.[0]?.message?.content ?? "";
+    return res.status(200).json({ reply });
   } catch (e: any) {
     return res
       .status(500)
