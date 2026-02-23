@@ -13,6 +13,8 @@ const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const OUTPUT_WRAPPER = `
 CONVERSATION RULES (NON-NEGOTIABLE)
 - Reduce fatigue: ask MAX 1 question per turn. No sub-questions.
+- Insert a blank line between each paragraph/bullet for readability.
+- Put "Next:" on its own line, separated by a blank line.
 - Keep the question <= 12 words.
 - After the question, add: "Reply in 1–2 bullets."
 - Keep responses short: max ~900 characters.
